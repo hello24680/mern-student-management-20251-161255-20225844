@@ -19,6 +19,9 @@ function App() {
   const [editAge, setEditAge] = useState('');
   const [editClass, setEditClass] = useState('');
 
+  // Search state
+  const [searchTerm, setSearchTerm] = useState('');
+
   // API URL from environment variable
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -196,93 +199,127 @@ function App() {
             <p className="message">Chưa có học sinh nào trong danh sách.</p>
           )}
 
-          {!loading && !error && students.length > 0 && (
-            <table className="students-table">
-              <thead>
-                <tr>
-                  <th>STT</th>
-                  <th>Họ và Tên</th>
-                  <th>Tuổi</th>
-                  <th>Lớp</th>
-                  <th>Thao tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {students.map((student, index) => (
-                  <tr key={student._id} className={editingId === student._id ? 'editing' : ''}>
-                    <td>{index + 1}</td>
+          {/* Search box */}
+          <div className="search-container">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="🔍 Tìm kiếm theo tên..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button
+                className="clear-search"
+                onClick={() => setSearchTerm('')}
+              >
+                ✕
+              </button>
+            )}
+          </div>
 
-                    {editingId === student._id ? (
-                      // Edit mode
-                      <>
-                        <td>
-                          <input
-                            type="text"
-                            value={editName}
-                            onChange={e => setEditName(e.target.value)}
-                            className="edit-input"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            value={editAge}
-                            onChange={e => setEditAge(e.target.value)}
-                            className="edit-input"
-                            min="1"
-                            max="100"
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={editClass}
-                            onChange={e => setEditClass(e.target.value)}
-                            className="edit-input"
-                          />
-                        </td>
-                        <td>
-                          <button
-                            onClick={() => handleUpdateStudent(student._id)}
-                            className="btn-save"
-                          >
-                            Lưu
-                          </button>
-                          <button
-                            onClick={handleCancelEdit}
-                            className="btn-cancel"
-                          >
-                            Hủy
-                          </button>
-                        </td>
-                      </>
-                    ) : (
-                      // View mode
-                      <>
-                        <td>{student.name}</td>
-                        <td>{student.age}</td>
-                        <td>{student.class}</td>
-                        <td>
-                          <button
-                            onClick={() => handleEditClick(student)}
-                            className="btn-edit"
-                          >
-                            Sửa
-                          </button>
-                          <button
-                            onClick={() => handleDelete(student._id, student.name)}
-                            className="btn-delete"
-                          >
-                            Xóa
-                          </button>
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+          {(() => {
+            // Filter students based on search term
+            const filteredStudents = students.filter(s =>
+              s.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            return (
+              <>
+                {!loading && !error && students.length > 0 && filteredStudents.length === 0 && (
+                  <p className="message">Không tìm thấy học sinh nào có tên "{searchTerm}"</p>
+                )}
+
+                {!loading && !error && filteredStudents.length > 0 && (
+                  <table className="students-table">
+                    <thead>
+                      <tr>
+                        <th>STT</th>
+                        <th>Họ và Tên</th>
+                        <th>Tuổi</th>
+                        <th>Lớp</th>
+                        <th>Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredStudents.map((student, index) => (
+                        <tr key={student._id} className={editingId === student._id ? 'editing' : ''}>
+                          <td>{index + 1}</td>
+
+                          {editingId === student._id ? (
+                            // Edit mode
+                            <>
+                              <td>
+                                <input
+                                  type="text"
+                                  value={editName}
+                                  onChange={e => setEditName(e.target.value)}
+                                  className="edit-input"
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="number"
+                                  value={editAge}
+                                  onChange={e => setEditAge(e.target.value)}
+                                  className="edit-input"
+                                  min="1"
+                                  max="100"
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  value={editClass}
+                                  onChange={e => setEditClass(e.target.value)}
+                                  className="edit-input"
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  onClick={() => handleUpdateStudent(student._id)}
+                                  className="btn-save"
+                                >
+                                  Lưu
+                                </button>
+                                <button
+                                  onClick={handleCancelEdit}
+                                  className="btn-cancel"
+                                >
+                                  Hủy
+                                </button>
+                              </td>
+                            </>
+                          ) : (
+                            // View mode
+                            <>
+                              <td>{student.name}</td>
+                              <td>{student.age}</td>
+                              <td>{student.class}</td>
+                              <td>
+                                <button
+                                  onClick={() => handleEditClick(student)}
+                                  className="btn-edit"
+                                >
+                                  Sửa
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(student._id, student.name)}
+                                  className="btn-delete"
+                                >
+                                  Xóa
+                                </button>
+                              </td>
+                            </>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>
