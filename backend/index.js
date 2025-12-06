@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -5,7 +6,7 @@ const bodyParser = require('body-parser');
 const Student = require('./Student');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -13,7 +14,8 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 // Kết nối MongoDB
-mongoose.connect('mongodb://localhost:27017/student_db')
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/student_db';
+mongoose.connect(MONGODB_URI)
     .then(() => console.log("Đã kết nối MongoDB thành công"))
     .catch(err => console.error("Lỗi kết nối MongoDB:", err));
 
@@ -68,6 +70,25 @@ app.put('/api/students/:id', async (req, res) => {
     } catch (err) {
         console.error('Lỗi khi cập nhật học sinh:', err.message);
         res.status(400).json({ error: err.message });
+    }
+});
+
+// API DELETE xóa học sinh
+app.delete('/api/students/:id', async (req, res) => {
+    try {
+        const deleted = await Student.findByIdAndDelete(req.params.id);
+        if (!deleted) {
+            return res.status(404).json({ error: "Student not found" });
+        }
+        console.log('Đã xóa học sinh:', deleted);
+        res.json({
+            message: "Đã xóa học sinh thành công",
+            id: deleted._id,
+            name: deleted.name
+        });
+    } catch (err) {
+        console.error('Lỗi khi xóa học sinh:', err.message);
+        res.status(500).json({ error: err.message });
     }
 });
 

@@ -19,12 +19,15 @@ function App() {
   const [editAge, setEditAge] = useState('');
   const [editClass, setEditClass] = useState('');
 
+  // API URL from environment variable
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
   useEffect(() => {
     fetchStudents();
   }, []);
 
   const fetchStudents = () => {
-    axios.get('http://localhost:5000/api/students')
+    axios.get(`${API_URL}/api/students`)
       .then(response => {
         setStudents(response.data);
         setLoading(false);
@@ -45,7 +48,7 @@ function App() {
       class: stuClass.trim()
     };
 
-    axios.post('http://localhost:5000/api/students', newStudent)
+    axios.post(`${API_URL}/api/students`, newStudent)
       .then(res => {
         console.log("Đã thêm:", res.data);
         // Cập nhật danh sách học sinh
@@ -85,7 +88,7 @@ function App() {
       class: editClass.trim()
     };
 
-    axios.put(`http://localhost:5000/api/students/${id}`, updatedStudent)
+    axios.put(`${API_URL}/api/students/${id}`, updatedStudent)
       .then(res => {
         console.log("Đã cập nhật:", res.data);
         // Cập nhật danh sách học sinh
@@ -101,6 +104,26 @@ function App() {
       .catch(err => {
         console.error("Lỗi khi cập nhật:", err);
         alert("Lỗi khi cập nhật học sinh: " + (err.response?.data?.error || err.message));
+      });
+  };
+
+  const handleDelete = (id, name) => {
+    if (!window.confirm(`Bạn có chắc muốn xóa học sinh "${name}"?`)) {
+      return;
+    }
+
+    axios.delete(`${API_URL}/api/students/${id}`)
+      .then(res => {
+        console.log(res.data.message);
+        // Xóa học sinh khỏi state
+        setStudents(prevList => prevList.filter(s => s._id !== id));
+        // Hiển thị thông báo thành công
+        setSuccessMessage(`Đã xóa học sinh "${res.data.name}" thành công!`);
+        setTimeout(() => setSuccessMessage(''), 3000);
+      })
+      .catch(err => {
+        console.error("Lỗi khi xóa:", err);
+        alert("Lỗi khi xóa học sinh: " + (err.response?.data?.error || err.message));
       });
   };
 
@@ -245,6 +268,12 @@ function App() {
                             className="btn-edit"
                           >
                             Sửa
+                          </button>
+                          <button
+                            onClick={() => handleDelete(student._id, student.name)}
+                            className="btn-delete"
+                          >
+                            Xóa
                           </button>
                         </td>
                       </>

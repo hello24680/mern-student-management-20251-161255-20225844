@@ -235,7 +235,8 @@ h2 {
 /* Action Buttons */
 .btn-edit,
 .btn-save,
-.btn-cancel {
+.btn-cancel,
+.btn-delete {
   padding: 8px 16px;
   margin: 0 4px;
   border: none;
@@ -279,9 +280,21 @@ h2 {
   box-shadow: 0 4px 12px rgba(244, 67, 54, 0.5);
 }
 
+.btn-delete {
+  background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.btn-delete:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.5);
+}
+
 .btn-edit:active,
 .btn-save:active,
-.btn-cancel:active {
+.btn-cancel:active,
+.btn-delete:active {
   transform: translateY(0);
 }
 
@@ -305,7 +318,8 @@ h2 {
 
   .btn-edit,
   .btn-save,
-  .btn-cancel {
+  .btn-cancel,
+  .btn-delete {
     padding: 6px 12px;
     font-size: 0.85em;
     margin: 2px;
