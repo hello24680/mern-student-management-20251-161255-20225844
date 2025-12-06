@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const Student = require('./Student');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 // Middleware
 app.use(cors());
@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 // Kết nối MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/student_db';
+const MONGODB_URI = process.env.MONGODB_URI;
 mongoose.connect(MONGODB_URI)
     .then(() => console.log("Đã kết nối MongoDB thành công"))
     .catch(err => console.error("Lỗi kết nối MongoDB:", err));

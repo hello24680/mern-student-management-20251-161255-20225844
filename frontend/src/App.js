@@ -22,8 +22,11 @@ function App() {
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Sort state
+  const [sortAsc, setSortAsc] = useState(true);
+
   // API URL from environment variable
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const API_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchStudents();
@@ -218,19 +221,38 @@ function App() {
             )}
           </div>
 
+          {/* Sort button */}
+          <div className="sort-container">
+            <button
+              className="btn-sort"
+              onClick={() => setSortAsc(prev => !prev)}
+            >
+              {sortAsc ? '⬆️ Sắp xếp A → Z' : '⬇️ Sắp xếp Z → A'}
+            </button>
+          </div>
+
           {(() => {
             // Filter students based on search term
             const filteredStudents = students.filter(s =>
               s.name.toLowerCase().includes(searchTerm.toLowerCase())
             );
 
+            // Sort students by name
+            const sortedStudents = [...filteredStudents].sort((a, b) => {
+              const nameA = a.name.toLowerCase();
+              const nameB = b.name.toLowerCase();
+              if (nameA < nameB) return sortAsc ? -1 : 1;
+              if (nameA > nameB) return sortAsc ? 1 : -1;
+              return 0;
+            });
+
             return (
               <>
-                {!loading && !error && students.length > 0 && filteredStudents.length === 0 && (
+                {!loading && !error && students.length > 0 && sortedStudents.length === 0 && (
                   <p className="message">Không tìm thấy học sinh nào có tên "{searchTerm}"</p>
                 )}
 
-                {!loading && !error && filteredStudents.length > 0 && (
+                {!loading && !error && sortedStudents.length > 0 && (
                   <table className="students-table">
                     <thead>
                       <tr>
@@ -242,7 +264,7 @@ function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredStudents.map((student, index) => (
+                      {sortedStudents.map((student, index) => (
                         <tr key={student._id} className={editingId === student._id ? 'editing' : ''}>
                           <td>{index + 1}</td>
 
