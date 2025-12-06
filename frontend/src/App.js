@@ -13,6 +13,12 @@ function App() {
   const [stuClass, setStuClass] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Edit mode states
+  const [editingId, setEditingId] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editAge, setEditAge] = useState('');
+  const [editClass, setEditClass] = useState('');
+
   useEffect(() => {
     fetchStudents();
   }, []);
@@ -55,6 +61,46 @@ function App() {
       .catch(err => {
         console.error("Lỗi khi thêm:", err);
         alert("Lỗi khi thêm học sinh: " + (err.response?.data?.error || err.message));
+      });
+  };
+
+  const handleEditClick = (student) => {
+    setEditingId(student._id);
+    setEditName(student.name);
+    setEditAge(student.age);
+    setEditClass(student.class);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditName('');
+    setEditAge('');
+    setEditClass('');
+  };
+
+  const handleUpdateStudent = (id) => {
+    const updatedStudent = {
+      name: editName.trim(),
+      age: Number(editAge),
+      class: editClass.trim()
+    };
+
+    axios.put(`http://localhost:5000/api/students/${id}`, updatedStudent)
+      .then(res => {
+        console.log("Đã cập nhật:", res.data);
+        // Cập nhật danh sách học sinh
+        setStudents(prev => prev.map(stu =>
+          stu._id === id ? res.data : stu
+        ));
+        // Thoát chế độ chỉnh sửa
+        handleCancelEdit();
+        // Hiển thị thông báo thành công
+        setSuccessMessage('Cập nhật học sinh thành công!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      })
+      .catch(err => {
+        console.error("Lỗi khi cập nhật:", err);
+        alert("Lỗi khi cập nhật học sinh: " + (err.response?.data?.error || err.message));
       });
   };
 
@@ -135,15 +181,74 @@ function App() {
                   <th>Họ và Tên</th>
                   <th>Tuổi</th>
                   <th>Lớp</th>
+                  <th>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {students.map((student, index) => (
-                  <tr key={student._id}>
+                  <tr key={student._id} className={editingId === student._id ? 'editing' : ''}>
                     <td>{index + 1}</td>
-                    <td>{student.name}</td>
-                    <td>{student.age}</td>
-                    <td>{student.class}</td>
+
+                    {editingId === student._id ? (
+                      // Edit mode
+                      <>
+                        <td>
+                          <input
+                            type="text"
+                            value={editName}
+                            onChange={e => setEditName(e.target.value)}
+                            className="edit-input"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            value={editAge}
+                            onChange={e => setEditAge(e.target.value)}
+                            className="edit-input"
+                            min="1"
+                            max="100"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            value={editClass}
+                            onChange={e => setEditClass(e.target.value)}
+                            className="edit-input"
+                          />
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => handleUpdateStudent(student._id)}
+                            className="btn-save"
+                          >
+                            Lưu
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="btn-cancel"
+                          >
+                            Hủy
+                          </button>
+                        </td>
+                      </>
+                    ) : (
+                      // View mode
+                      <>
+                        <td>{student.name}</td>
+                        <td>{student.age}</td>
+                        <td>{student.class}</td>
+                        <td>
+                          <button
+                            onClick={() => handleEditClick(student)}
+                            className="btn-edit"
+                          >
+                            Sửa
+                          </button>
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>

@@ -212,6 +212,79 @@ h2 {
   color: #667eea;
 }
 
+/* Edit Mode Styles */
+.students-table tr.editing {
+  background: linear-gradient(90deg, rgba(255, 235, 59, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%);
+}
+
+.edit-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 2px solid #667eea;
+  border-radius: 5px;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #764ba2;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+/* Action Buttons */
+.btn-edit,
+.btn-save,
+.btn-cancel {
+  padding: 8px 16px;
+  margin: 0 4px;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.9em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-edit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.5);
+}
+
+.btn-cancel {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.btn-cancel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.5);
+}
+
+.btn-edit:active,
+.btn-save:active,
+.btn-cancel:active {
+  transform: translateY(0);
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 20px;
@@ -228,5 +301,13 @@ h2 {
   .students-table th,
   .students-table td {
     padding: 12px 8px;
+  }
+
+  .btn-edit,
+  .btn-save,
+  .btn-cancel {
+    padding: 6px 12px;
+    font-size: 0.85em;
+    margin: 2px;
   }
 }
