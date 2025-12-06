@@ -27,6 +27,18 @@ app.get('/api/students', async (req, res) => {
     }
 });
 
+// API POST thêm học sinh mới
+app.post('/api/students', async (req, res) => {
+    try {
+        const newStudent = await Student.create(req.body);
+        console.log('Đã thêm học sinh mới:', newStudent);
+        res.status(201).json(newStudent);
+    } catch (err) {
+        console.error('Lỗi khi thêm học sinh:', err.message);
+        res.status(400).json({ error: err.message });
+    }
+});
+
 // Route mặc định
 app.get('/', (req, res) => {
     res.send('Student Management API is running');
